@@ -1,13 +1,12 @@
 import random
 from datetime import datetime
 
+from flask import url_for
 from . import db
 from .constants import (
-    VALID_CUSTOM_ID_RE,
-    ERROR_INVALID_CUSTOM_ID,
     ERROR_CUSTOM_ID_EXISTS,
-    DEFAULT_SHORT_ID_MIN_LENGTH,
     DEFAULT_SHORT_ID_MAX_LENGTH,
+    DEFAULT_SHORT_ID_MIN_LENGTH,
     ALLOWED_CHARACTERS,
 )
 
@@ -33,24 +32,19 @@ class URLMap(db.Model):
         return URLMap.query.filter_by(short=short_id).first()
 
     @staticmethod
-    def get_unique_short_id(length=DEFAULT_SHORT_ID_MIN_LENGTH):
-        """Генерация уникального короткого идентификатора переменной длины."""
-        if length > DEFAULT_SHORT_ID_MAX_LENGTH:
-            raise ValueError(
-                "Превышена максимально допустимая длина идентификатора."
-            )
+    def get_unique_short_id():
         while True:
             short_id = ''.join(
-                random.choices(ALLOWED_CHARACTERS, k=length)
+                random.choices(
+                    ALLOWED_CHARACTERS, k=DEFAULT_SHORT_ID_MIN_LENGTH
+                )
             )
-            if not URLMap.query.filter_by(short=short_id).first():
+            if not URLMap.get_by_short_id(short_id):
                 return short_id
 
     @staticmethod
     def create(original, custom_id=None):
         if custom_id:
-            if not VALID_CUSTOM_ID_RE.fullmatch(custom_id):
-                raise ValueError(ERROR_INVALID_CUSTOM_ID)
             if URLMap.query.filter_by(short=custom_id).first():
                 raise ValueError(ERROR_CUSTOM_ID_EXISTS)
             short = custom_id
@@ -65,8 +59,8 @@ class URLMap(db.Model):
     def to_dict(self, host_url):
         return {
             'url': self.original,
-            'short_link': host_url + self.short
+            'short_link': url_for(
+                'follow_link',
+                short=self.short, _external=True
+            ),
         }
-
-    def to_api_dict(self):
-        return {'url': self.original}

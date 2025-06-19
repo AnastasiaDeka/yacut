@@ -1,4 +1,4 @@
-from flask import flash, redirect, render_template, url_for
+from flask import flash, redirect, render_template, request
 
 from . import app
 from .forms import URLForm
@@ -21,7 +21,7 @@ def index():
         flash(str(error), 'error')
         return render_template('yacut.html', form=form)
 
-    short_url = url_for('follow_link', short=url_map.short, _external=True)
+    short_url = url_map.to_dict(request.host_url)['short_link']
     flash(short_url, 'short_link')
     return render_template('yacut.html', form=form)
 

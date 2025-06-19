@@ -33,11 +33,6 @@ def internal_error(error):
     return render_template('500.html'), HTTPStatus.INTERNAL_SERVER_ERROR
 
 
-@app.errorhandler(ValueError)
-def handle_value_error(error):
-    return jsonify({'message': str(error)}), HTTPStatus.BAD_REQUEST
-
-
 @app.errorhandler(LookupError)
 def handle_lookup_error(error):
     return jsonify({'message': str(error)}), HTTPStatus.NOT_FOUND

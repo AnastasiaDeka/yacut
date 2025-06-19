@@ -3,12 +3,12 @@ from http import HTTPStatus
 from flask import request, jsonify
 
 from . import app
-from .models import URLMap
 from .constants import (
     ERROR_NO_REQUEST_BODY,
     ERROR_NO_URL_FIELD,
-    ERROR_ID_NOT_FOUND
+    ERROR_ID_NOT_FOUND,
 )
+from .models import URLMap
 
 
 @app.route('/api/id/', methods=['POST'])

@@ -45,7 +45,7 @@ class URLMap(db.Model):
     @staticmethod
     def create(original, custom_id=None):
         if custom_id:
-            if URLMap.query.filter_by(short=custom_id).first():
+            if URLMap.get_by_short_id(custom_id):
                 raise ValueError(ERROR_CUSTOM_ID_EXISTS)
             short = custom_id
         else:
@@ -56,7 +56,7 @@ class URLMap(db.Model):
         db.session.commit()
         return url_map
 
-    def to_dict(self, host_url):
+    def to_dict(self):
         return {
             'url': self.original,
             'short_link': url_for(
